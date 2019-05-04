@@ -35,7 +35,7 @@ public class Workers {
         Artur.put(name,"Artur");          Hizam.put(name,"Hizam");          Andrey.put(name,"Andrey");
         Artur.put(phoneNumber,"0700");    Hizam.put(phoneNumber,"0500");    Andrey.put(phoneNumber,"0300");
         Artur.put(car,"Honda");           Hizam.put(car,"Toyota");          Andrey.put(car,"Nissan");
-        Artur.put(status,"Yes");          Hizam.put(status,"No");          Andrey.put(status,"Yes");
+        Artur.put(status,"AVAILABLE");          Hizam.put(status,"No");          Andrey.put(status,"Yes");
     }
 
 

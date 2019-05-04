@@ -25,6 +25,15 @@ public class Randomiser {
 
         return result;
     }
+    public String orderID(){
+        result="";
+        String[] Digits = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        for(int i=0;i<Digits.length-5;i++){
+            int k =random.nextInt(Digits.length);
+            result+=Digits[k];
+        }
+        return result;
+    }
     //public byte chooseOne(){
      //   return random.nextInt()
     //}

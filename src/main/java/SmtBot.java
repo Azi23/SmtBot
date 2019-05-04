@@ -1,134 +1,134 @@
+
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.IOException;
-
+import java.util.ArrayList;
 
 public class SmtBot extends TelegramLongPollingBot {
     private final String SmtDeliveryBot="SmtDeliveryBot";
     private final String BOTTOKEN="788358786:AAFN448f3ZSSb12FKivKZCLWVzfRjxDiViA";
-
-    private SendMessage message = new SendMessage();//bot
-
-    private String result = "";
-    public String comm = "1212";
-    private Object[] AdminsWords = {"admins", false, "equ", "addt","addd","avt","avd","help","exit"};
-    private boolean adminWrongWordsOn = false;
-    private boolean WrongPass = false;
-    private boolean Admin1 = false, inAdminsRoom = false;
-    private boolean helpAdminsRoom = true;
-    private byte attempts=3;
-    private boolean tryToEnterAdminsRoom=false;
-    boolean sd = true;
     private AdminsRoom a = new AdminsRoom();
-    public void WrongWordsForAdmins(Update update) {
-        int j = 0;
-        if (adminWrongWordsOn == true&&a.addingInfo()==false) {
-            for (int i = 0; i < AdminsWords.length; i++) {
+    private Customer newClient=new Customer();
+    private Workers workers = new Workers();
+    private SendMessage message = new SendMessage();//bot
+    private ArrayList<Object> adminsArray=new ArrayList<Object>();
+    private ArrayList<Object> customersArray=new ArrayList<Object>();
+    private ArrayList<Object> workerArray=new ArrayList<Object>();
 
-                if (AdminsWords[i].equals(comm)) {
-                    sd = true;
-                    break;
-                } else {
-                    //m(update,"Wrong"+i);
-                    //System.out.println("j = " + j);
-                    //System.out.println(AdminsWords.length);
-                    j++;
-                }
-                if (j >= AdminsWords.length - 1) {
-                    sd = false;
-                }
-            }
-            if (sd == false) {
-                m(update, "Wrong");
+    public String comm = "1212";
+    int kom=0;
+    private boolean Admin1 = false;
+
+
+
+    private void checkChatIDs(boolean t){
+
+        if(t==true){
+            for(int k=0;k<customersArray.size();k++) {
+                if (customersArray.get(customersArray.size() - 1).toString().equals(customersArray.get(k).toString()) && customersArray.size()!=1) customersArray.remove(k);
             }
         }
-    }
-
-    private void Admins(Update update) {
-        byte ko = 0;
-
-        if (comm.equals("admins")) {
-            inAdminsRoom=false;
-            m(update, "Type your pass:");
-            Admin1 = true;
-            ko = 1;
-            tryToEnterAdminsRoom = true;
-            WrongPass=false;
-        }
-        if (Admin1 == true && ko == 0) {
-            AdminsRoom a = new AdminsRoom();
-            if (a.checkPass(comm)==false) {
-                m(update, "Wrong password. Attempts: " + (attempts-1));
-                attempts -= 1;
-                if (attempts == 0) {
-                    tryToEnterAdminsRoom = false;
-                    WrongPass = true;
-                    Admin1 = false;
-                }
-            } else {
-                m(update,"Successful!");
-                adminWrongWordsOn = true;
-                inAdminsRoom = true;
-                Admin1 = false;
+        else{
+            for(int k=0;k<adminsArray.size();k++) {
+                if (adminsArray.get(adminsArray.size() - 1).toString().equals(adminsArray.get(k).toString()) && adminsArray.size()!=1) adminsArray.remove(k);
             }
-            WrongPass=false;
-
         }
-        if (inAdminsRoom == true) {
-
-            if (helpAdminsRoom == true || comm.equals("help")) {
-                m(update, a.helpInAdminsRoom());
-            } else if (comm.equals("start") || comm.equals("/start")) {
-                inAdminsRoom = false;
-                tryToEnterAdminsRoom = false;
-                adminWrongWordsOn = false;
-                m(update, "Exit is done!");
-            }else if (comm.equals("exit")) {
-                inAdminsRoom = false;
-                tryToEnterAdminsRoom = false;
-                adminWrongWordsOn = false;
-                m(update, "Exit is done!");
-            }else {
-                m(update, a.functions(comm));
-            }
-
-            /*
-            if (comm.equals("av")) {
-                m(update, a.availableTaxi(comm));
-            } else if (comm.equals("de")) {
-                m(update, "s");
-            }*/
-            helpAdminsRoom = false;
-        }
-
-        //WrongWordsForAdmins(update);
 
     }
 
     public void onUpdateReceived(Update update) {
-        c(update);
 
-        Admins(update);
-
-        if (tryToEnterAdminsRoom == false) {
-            Customer newClient=new Customer();
-            try {
-                m(update,newClient.functions(comm));
-            } catch (IOException e) {
-                e.printStackTrace();
+        Message newMessage = update.getMessage();
+        comm = newMessage.getText();
+        customersArray.add(newMessage.getChatId());
+        //checkChatIDs(true);
+        boolean test2 = false;
+        boolean test3=false;
+        for (int k = 0; k < workerArray.size(); k++) {
+            if (customersArray.get(customersArray.size() - 1).toString().equals(workerArray.get(k).toString())) {
+                test2 = true;
+                System.out.println("id = " + customersArray.get(customersArray.size() - 1) + "\t\t Ad = " + workerArray.get(k));
             }
         }
 
+        for (int k = 0; k < adminsArray.size(); k++) {
+            if (customersArray.get(customersArray.size() - 1).toString().equals(adminsArray.get(k).toString())) {
+                test2 = true;
+                System.out.println("id = " + customersArray.get(customersArray.size() - 1) + "\t\t Ad = " + adminsArray.get(k));
+            }
+        }
+        System.out.println("test2 = " + test2);
+
+        if (test2 == true && Admin1 == true) {
+            String templ = adminsArray.get(adminsArray.size() - 1).toString();
+            adminsArray.clear();
+            adminsArray.add(templ);
+            m(update, a.functions(comm));
+        } else if (comm.equals("admins")) {
+
+            m(update, a.functions(comm));
+            Admin1 = true;
+            adminsArray.add(newMessage.getChatId());
+            //checkChatIDs(false);
+        } else if (comm.equals("exit")) {
+            Admin1 = false;
+            m(update, a.functions(comm));
+        }
+
+        String b="";
+        try{
+            b=comm.substring(0,6);
+        }catch (Exception e){}
+
+        if (test2 == false && comm.equals("admins") || b.equals("addme ")) {
+        } else if (test2 == false&&test3==false) {
+            try {
+                String message = newClient.functions(customersArray.get(customersArray.size() - 1).toString(), comm);
+
+                if (message.equals("+taxiNeed") || message.equals("+delivNeed")) {
+                    String mes = newClient.getClinetsdata(customersArray.get(customersArray.size() - 1).toString());
+                    mt(update, mes);
+                    //takingTheCar(mes);
+                    mt(update,"fff");
+                    message = "Your ZAKAZ is accepted. Please wait callback";
+                }
+
+
+                m(update, message);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if(comm.equals("work")){
+            workerArray.add(newMessage.getChatId());
+
+        }
+
+            if ("addme ".equals(b)) {
+                b = comm.substring(6);
+                if (b.equals("My ID")) {
+
+                } else  {
+                    m(update, a.addMeAsWorker(b));
+                    mt(update,comm+" is added.");
+                }
+            }
+
+
     }
 
+    public String takingTheCar(String information){
 
-    public void c(Update update) {
+        String[] info=information.split(" ");
+        if(info[1].equals("taxi")){
+            a.getTaxiWorkers();
+        }else if(info[1].equals("deliv")){
 
-        comm = update.getMessage().getText().toString();
-        System.out.println(comm);
-
+        }
+        return " ";
     }
 
     public void m(Update update, String messag) {
@@ -140,19 +140,22 @@ public class SmtBot extends TelegramLongPollingBot {
         } catch (Exception e) {
             System.out.println("Oshibka");
         }
-        Long m=(609813363L);
+
+    }
+    public void mt(Update update, String messag) {
+
+        message.setText(messag);
+        if(kom==adminsArray.size()) kom=0;
+        String b=adminsArray.get(kom).toString();
+        message.setChatId(b);
+        kom++;
         System.out.println(update.getMessage().getChatId());
-        message.setChatId(m);
         try {
             execute(message);
         } catch (Exception e) {
-            System.out.println("Oshibka");
+            System.out.println("OshibkaMT");
         }
-    }
 
-    protected String admins(Update update) {
-
-        return "";
     }
 
     public String getBotUsername() {
